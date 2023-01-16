@@ -2052,7 +2052,13 @@ Class cSrcCodeReader is a cObject
                         Move True to bInFunction
                     End
                     If (sCommand="END_FUNCTION") Begin
-                        Move False to bInFunction
+                        If (bInFunction) Begin
+                            Move False to bInFunction
+                        End
+                        Else Begin
+                            // Avoids issues with incorrect method scoping, when end_ is mixed up
+                            Move False to bInProcedure
+                        End
                     End
                     If (sCommand="PROCEDURE") Begin // X
                         Move aItems[1].sItem to sName // move (psItem.i(hItemsOnLine,1)) to sName
@@ -2078,7 +2084,13 @@ Class cSrcCodeReader is a cObject
                         Move True to bInProcedure
                     End
                     If (sCommand="END_PROCEDURE") Begin
-                        Move False to bInProcedure
+                        If (bInProcedure) Begin
+                            Move False to bInProcedure
+                        End
+                        Else Begin
+                            // Avoids issues with incorrect method scoping, when end_ is mixed up
+                            Move False to bInFunction
+                        End
                     End
                     If (sCommand="PROPERTY") Begin
                         Move aItems[2].sItem to sName // move (psItem.i(hItemsOnLine,2)) to sName
