@@ -2125,6 +2125,20 @@ Class cSrcCodeReader is a cObject
                         Send SetAuxValue1 of _oVdfSourceObjectsScanned  iGrb aItems[1].sItem // type
                         //Send read_source_file sName
                     End
+                    // Incorrectly marked global variables
+                    If (bInFunction = False and bInProcedure = False) Begin
+                        If (sCommand="STRING" or sCommand="INTEGER" or sCommand="DATE" or sCommand="NUMBER" or sCommand="REAL" or sCommand="VARIANT" or sCommand="ROWID" or sCommand="INDICATOR") Begin
+                            For iSearchedItem from 1 to (SizeOfArray(aItems)-1)
+                                Move aItems[iSearchedItem].sItem to sName // name of global
+                                If (IsInteger(oStringFunctions, sName) = False) Begin
+                                    // Exclude lengths like 'STRING SCREEN_TYPE 1'
+                                    Get Add_Object of _oVdfSourceObjectsScanned SIT_GLOBALVAR sName -1 sFileName iObjectLine (AutoDoc(Self)) (MetaItems(Self)) to iGrb
+                                    Send SetAuxValue1 of _oVdfSourceObjectsScanned  iGrb aItems[0].sItem // type
+                                End
+                            Loop
+                            //Send read_source_file sName
+                        End
+                    End
                     If (sCommand="DEFINE") Begin
                         Move aItems[1].sItem to sName // move (psItem.i(hItemsOnLine,1)) to sName
 
